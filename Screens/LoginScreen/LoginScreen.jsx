@@ -1,21 +1,73 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { StyleSheet, Text, TextInput, View } from 'react-native'
 import AuthButton from '../../Components/AuthButton';
 import Container from '../../Components/Container';
 
 const LoginScreen = () => {
-return (
-    <Container pb={144} pt={30}>
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [inValidEmail, setinValidEmail] = useState(false);
+  const [inValidPassword, setinValidPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
+
+   const handleSubmit = () => {
+    
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+    
+    if (inValidEmail) {
+      Alert.alert('Error', `${email} має неправильний формат email`);
+      return;
+    }
+
+     if (inValidPassword) {
+       Alert.alert('Error', 'Пароль має містити від 6 символів');
+             setinValidPassword(true)
+      return;
+    }
+
+    console.log({
+      email: email.trim(), password: password.trim()
+    });
+  }
+
+  const onChangeEmail = (event) => {
+    setEmail(event)
+  }
+  const onChangePassword = (event) => {
+    setPassword(event)
+  }
+
+  const checkValidEmail = () => {
+        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+
+ if (!emailRegex.test(email)){
+        return setinValidEmail(true);
+      } else {
+        return setinValidEmail(false);
+  }
+};
+  const checkValidPassword = () => {
+    if (password.length < 6) {
+        return setinValidPassword(true);
+      } else {
+       return  setinValidPassword(false);
+  }
+};
+
+  return (
+  <>
+    <Container pt={30}>
     <Text style={styles.title}>Увійти</Text>
             <View style={{display: "flex", gap: 16, marginBottom: 43, width: "100%"}}>
-              <TextInput style={styles.input} placeholder='Адреса електронної пошти'></TextInput>
+                <TextInput value={email} style={[styles.input, inValidEmail && styles.inputInvalid]} placeholder='Адреса електронної пошти' onChangeText={onChangeEmail} onBlur={checkValidEmail}></TextInput>
               <View>
-                  <TextInput style={styles.input} placeholder='Пароль'></TextInput>  
-                  <Text style={styles.showPassword}>Показати</Text>
+                   <TextInput secureTextEntry={!showPassword} value={password} style={[styles.input, inValidPassword && styles.inputInvalid]} placeholder='Пароль' onChangeText={onChangePassword} onBlur={checkValidPassword}></TextInput>
+                   <Text style={styles.showPassword} onPress={() => {setShowPassword(!showPassword)}}>Показати</Text>
               </View>
             </View>
-        <AuthButton name={'Зареєструватися'} text={'Немає акаунту?'} auth={'Зареєструватися'} />
-    </Container>
+      </Container>
+        <AuthButton name={'Зареєструватися'} text={'Вже є акаунт?'} auth={'Увійти'} handleSubmit={handleSubmit} />
+      </>
   )
 }
 
@@ -64,6 +116,9 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderRadius: 8,
     padding: 16,
+  },
+    inputInvalid: {
+   borderColor: 'red' 
   },
   showPassword: {
     position: 'absolute',

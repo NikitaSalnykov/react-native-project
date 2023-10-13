@@ -1,13 +1,84 @@
-import React from 'react'
-import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
+import React, { useState } from 'react'
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
 import AddPhoto from "../../assets/svg/add.svg";
-import AuthButton from '../../Components/AuthButton';
+
 import Container from '../../Components/Container';
+import AuthButton from '../../Components/AuthButton';
 
 function RegistrationScreen() {
+  const [login, setLogin] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [inValidLogin, setinValidLogin] = useState(false);
+  const [inValidEmail, setinValidEmail] = useState(false);
+  const [inValidPassword, setinValidPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
+
+  
+  const handleSubmit = () => {
+    
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+    
+    if (inValidEmail) {
+      Alert.alert('Error', `${email} має неправильний формат email`);
+      return;
+    }
+
+     if (inValidPassword) {
+       Alert.alert('Error', 'Пароль має містити від 6 символів');
+             setinValidPassword(true)
+      return;
+    }
+
+     if (inValidLogin) {
+       Alert.alert('Error', 'Логін має містити від 2 символів');
+       setinValidLogin(true)
+      return;
+    }
+
+    console.log({
+      login: login.trim(), email: email.trim(), password: password.trim()
+    });
+  }
+
+  const onChangeLogin = (event) => {
+    setLogin(event)
+
+  }
+  const onChangeEmail = (event) => {
+    setEmail(event)
+  }
+  const onChangePassword = (event) => {
+    setPassword(event)
+  }
+
+const checkValidLogin = () => {
+    if (login.length < 2) {
+        return setinValidLogin(true);
+      } else {
+        return setinValidLogin(false);
+  }
+  };
+  const checkValidEmail = () => {
+        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+
+ if (!emailRegex.test(email)){
+        return setinValidEmail(true);
+      } else {
+        return setinValidEmail(false);
+  }
+};
+  const checkValidPassword = () => {
+    if (password.length < 6) {
+        return setinValidPassword(true);
+      } else {
+       return  setinValidPassword(false);
+  }
+};
+
   return (
     <>
-    <Container pt={92}>
+        <Container pt={92}>
         <View style={styles.avatarContainer}>
           <View style={styles.dowloadAvatarWrapper}>
             <AddPhoto/>
@@ -15,16 +86,15 @@ function RegistrationScreen() {
         </View>
       <Text style={styles.title}>Реєстрація</Text>
         <View style={{display: "flex", gap: 16, marginBottom: 43, width: "100%"}}>
-          <TextInput style={styles.input} placeholder='Логін'></TextInput>
-              <TextInput style={styles.input} placeholder='Адреса електронної пошти'></TextInput>
+        <TextInput value={login} name="login" style={[styles.input, inValidLogin && styles.inputInvalid]} placeholder='Логін' onChangeText={onChangeLogin} onBlur={checkValidLogin}></TextInput>
+        <TextInput value={email} style={[styles.input, inValidEmail && styles.inputInvalid]} placeholder='Адреса електронної пошти' onChangeText={onChangeEmail} onBlur={checkValidEmail}></TextInput>
         <View>
-          <TextInput style={styles.input} placeholder='Пароль'></TextInput>
-            <Text style={styles.showPassword}>Показати</Text>
-              </View>
+          <TextInput secureTextEntry={!showPassword} value={password} style={[styles.input, inValidPassword && styles.inputInvalid]} placeholder='Пароль' onChangeText={onChangePassword} onBlur={checkValidPassword}></TextInput>
+            <Text style={styles.showPassword} onPress={() => {setShowPassword(!showPassword)}}>Показати</Text>
+          </View>
         </View>
-      </Container>
-          <AuthButton name={'Зареєструватися'} text={'Вже є акаунт?'} auth={'Увійти'} />
-    </>
+    </Container>
+      <AuthButton name={'Зареєструватися'} text={'Вже є акаунт?'} auth={'Увійти'} handleSubmit={handleSubmit} /></>
   )
 }
 
@@ -69,6 +139,9 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderRadius: 8,
     padding: 16,
+  },
+  inputInvalid: {
+   borderColor: 'red' 
   },
   showPassword: {
     position: 'absolute',

@@ -22,9 +22,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-    "android": { 
-      "softwareKeyboardLayoutMode": "pan" }
-  },
+      "softwareKeyboardLayoutMode": "pan" 
+    },
     "web": {
       "favicon": "./assets/favicon.png"
     }
