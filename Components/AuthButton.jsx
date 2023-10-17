@@ -1,13 +1,18 @@
 import React from 'react'
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const AuthButton = ({name, text, auth, handleSubmit}) => {
+const AuthButton = ({ name, text, auth, handleSubmit, disabled }) => {
+  const navigation = useNavigation();
+
   return (
-        <View style={[styles.authContainer, { paddingBottom: auth === "Увійти" ? 144 : 78  }]}>
-          <TouchableOpacity onPress={handleSubmit} style={styles.buttonWrapper}>
-        <Text style={styles.button} title={name}>Зареєструватися</Text>
+        <View style={[styles.authContainer, { paddingBottom: auth === "Зареєструватися" ? 144 : 78  }]} 
+>
+          <TouchableOpacity onPress={!disabled ? handleSubmit : null} style={[styles.buttonWrapper, disabled && {backgroundColor: 'silver'}]} >
+        <Text style={styles.button} title={name}>{name}</Text>
           </TouchableOpacity>
-      <Text style={styles.loginText}>{text} <Text style={{textDecorationLine: 'underline'}}>{auth}</Text></Text>
+      <Text style={styles.loginText}>{text} <Text style={{ textDecorationLine: 'underline' }}
+        onPress={() => navigation.navigate(name === "Зареєструватися" ? "Login" : "Registration")}>{auth}</Text></Text>
         </View>
   )
 }

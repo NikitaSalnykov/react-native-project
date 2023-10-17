@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
-import { StyleSheet, Text, TextInput, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Alert, StyleSheet, Text, TextInput, View } from 'react-native'
 import AuthButton from '../../Components/AuthButton';
-import Container from '../../Components/Container';
+import Container from '../../Components/AuthWrapper';
+import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +10,13 @@ const LoginScreen = () => {
   const [inValidEmail, setinValidEmail] = useState(false);
   const [inValidPassword, setinValidPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false)
+  const [disabled, setDisable] = useState(true)
+
+  const navigation = useNavigation();
+
+    useEffect(() => {
+    if (email && password) setDisable(false)
+  }, [ email, password])
 
    const handleSubmit = () => {
     
@@ -20,14 +28,18 @@ const LoginScreen = () => {
     }
 
      if (inValidPassword) {
-       Alert.alert('Error', 'Пароль має містити від 6 символів');
-             setinValidPassword(true)
+      Alert.alert('Error', 'Пароль має містити від 6 символів');
+      setinValidPassword(true)
       return;
     }
 
     console.log({
       email: email.trim(), password: password.trim()
     });
+     
+    setDisable(true)
+    navigation.navigate("Home")
+
   }
 
   const onChangeEmail = (event) => {
@@ -66,7 +78,7 @@ const LoginScreen = () => {
               </View>
             </View>
       </Container>
-        <AuthButton name={'Зареєструватися'} text={'Вже є акаунт?'} auth={'Увійти'} handleSubmit={handleSubmit} />
+        <AuthButton name={'Авторизуватися'} text={'Немає акаунту?'} auth={'Зареєструватися'} handleSubmit={handleSubmit} disabled={disabled}/>
       </>
   )
 }

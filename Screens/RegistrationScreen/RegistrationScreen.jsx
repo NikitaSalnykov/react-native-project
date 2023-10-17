@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Alert, StyleSheet, Text, TextInput,  View } from 'react-native'
 import AddPhoto from "../../assets/svg/add.svg";
-
-import Container from '../../Components/Container';
+import { useNavigation } from '@react-navigation/native';
+import Container from '../../Components/AuthWrapper';
 import AuthButton from '../../Components/AuthButton';
 
 function RegistrationScreen() {
@@ -13,6 +13,13 @@ function RegistrationScreen() {
   const [inValidEmail, setinValidEmail] = useState(false);
   const [inValidPassword, setinValidPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false)
+  const [disabled, setDisable] = useState(true)
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (login && email && password) setDisable(false)
+  }, [login, email, password])
+  
 
   
   const handleSubmit = () => {
@@ -39,6 +46,9 @@ function RegistrationScreen() {
     console.log({
       login: login.trim(), email: email.trim(), password: password.trim()
     });
+
+    setDisable(true)
+    navigation.navigate("Home")
   }
 
   const onChangeLogin = (event) => {
@@ -94,7 +104,7 @@ const checkValidLogin = () => {
           </View>
         </View>
     </Container>
-      <AuthButton name={'Зареєструватися'} text={'Вже є акаунт?'} auth={'Увійти'} handleSubmit={handleSubmit} /></>
+      <AuthButton name={'Зареєструватися'} text={'Вже є акаунт?'} auth={'Увійти'} handleSubmit={handleSubmit} disabled={disabled} /></>
   )
 }
 

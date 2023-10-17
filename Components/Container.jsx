@@ -1,40 +1,27 @@
-import background from "../assets/background.png";
-import { ImageBackground, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
-import AuthButton from "./AuthButton";
+import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
-const Container = ({pt, children}) => {
+const Container = ({children}) => {
   return (
-     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ImageBackground source={background} imageStyle={styles.customImageStyle} resizeMode='cover' style={{flex: 1, justifyContent:'flex-end' }} >
-      <View style={{position: 'absolute', width: "100%", height: 200, backgroundColor: "white"}}></View>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <KeyboardAvoidingView 
-            behavior={Platform.OS === 'ios' ? 'padding' : null}>
-              <View style={[styles.container, { paddingTop: pt, position: 'relative'}]}>
-
-        {children}
-            </View>
-          </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
-      </ImageBackground>
-              </TouchableWithoutFeedback>
+    <View style={[styles.container, {flex: 1}]}>
+      {children}
+     </View>
   )
 }
-
-export default Container
-
 
 const styles = StyleSheet.create({
   container: {
     position: "relative",
     fontFamily: "Roboto-Regular",
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
     backgroundColor: "#fff",
     paddingLeft: 16,
     paddingRight: 16,
-    alignItems: "center",
+    paddingTop: 32,
+    alignItems: "start",
+    
   },
   customImageStyle: {
   },
 })
+
+export default Container
