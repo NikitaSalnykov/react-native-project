@@ -1,15 +1,24 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import PostsIcon from "../../assets/svg/posts.svg"
 import ProfileIcon from "../../assets/svg/profile.svg"
 import AddIcon from "../../assets/svg/newPost.svg"
+import Back from "../../assets/svg/back.svg"
 import PostsScreen from "../PostsScreen/PostsScreen"
 import CreatePostsScreen from "../CreatePostsScreen/CreatePostsScreen"
 import ProfileScreen from "../ProfileScreen/ProfileScreen"
 import LogoutButton from "../../Components/LogoutButton";
+import { useNavigation } from "@react-navigation/native"; 
 
-  const optionsFn = (titleName, show) => {
+const Home = () => {
+  const navigation = useNavigation();
+  const Tabs = createBottomTabNavigator();
+
+  const goBack = () => {
+  navigation.goBack(); 
+};
+  const optionsFn = (titleName, show, back) => {
       return {
             title: titleName, headerShown: show,
             headerTitleAlign: "center",
@@ -24,13 +33,16 @@ import LogoutButton from "../../Components/LogoutButton";
             color: "#212121",
             fontSize: 17,
           },
-            headerRight: () => (<LogoutButton/>)
-          }
+            headerRight: () => (<LogoutButton/>),
+            headerLeft: () => (back && 
+              <TouchableOpacity onPress={goBack} style={{ marginLeft: 10 }}>
+                <Back/>
+              </TouchableOpacity>
+            ),
+
+  }
   }
 
-const Tabs = createBottomTabNavigator();
-
-const Home = () => {
   return (
     <Tabs.Navigator
        initialRouteName="Posts" 
@@ -56,7 +68,8 @@ const Home = () => {
           return <View style={buttonStyles}><ProfileIcon  color={focused ? "white" : "#212121CC"} /></View>
           }
         },
-        
+          tabBarVisible: false,
+
           tabBarStyle: {
           height: 83,
           paddingBottom: 10,
@@ -67,14 +80,15 @@ const Home = () => {
           tabBarShowLabel: false,
           screenOptions: {
 
-          }
+          },
+          
       })}
 
 
         
     >
       <Tabs.Screen name="Posts" component={PostsScreen}  options={optionsFn("Публікації", true)}/>
-      <Tabs.Screen name="NewPost" component={CreatePostsScreen} options={optionsFn("Створити публікацію", true)}/>
+      <Tabs.Screen name="NewPost" component={CreatePostsScreen} options={{...optionsFn("Створити публікацію", true, true), tabBarStyle: {display: 'none'}}}/>
       <Tabs.Screen name="Profile" component={ProfileScreen} options={optionsFn("Профіль", false)}/>
     </Tabs.Navigator>
   );

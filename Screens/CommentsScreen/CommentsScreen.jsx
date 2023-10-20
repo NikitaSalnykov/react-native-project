@@ -1,9 +1,15 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react'
 import { Text } from 'react-native'
+import Container from '../../Components/Container';
 
 const CommentsScreen = () => {
+  const navigation = useNavigation();
+
   return (
-    <Text>CommentsScreen</Text>
+    <Container></Container>
+
+
   )
 }
 

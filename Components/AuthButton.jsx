@@ -8,7 +8,7 @@ const AuthButton = ({ name, text, auth, handleSubmit, disabled }) => {
   return (
         <View style={[styles.authContainer, { paddingBottom: auth === "Зареєструватися" ? 144 : 78  }]} 
 >
-          <TouchableOpacity onPress={!disabled ? handleSubmit : null} style={[styles.buttonWrapper, disabled && {backgroundColor: 'silver'}]} >
+          <TouchableOpacity onPress={!disabled ? handleSubmit : null} style={[styles.buttonWrapper, disabled && {backgroundColor: '#BDBDBD'}]} >
         <Text style={styles.button} title={name}>{name}</Text>
           </TouchableOpacity>
       <Text style={styles.loginText}>{text} <Text style={{ textDecorationLine: 'underline' }}
