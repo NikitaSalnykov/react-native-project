@@ -128,10 +128,10 @@ const CreatePostsScreen = () => {
         <TouchableOpacity onPress={photo ? handleMap : () => {} }>
   <View style={{width: "100%", borderBottomWidth: "1", borderColor: "#eeeeee"}}>
     <Text
-      style={[styles.input, styles.text, { paddingLeft: 28 }, !photo && {color: '#BDBDBD'}]}
+      style={[styles.input, styles.text, { paddingLeft: 28 }, !locationName && {color: '#BDBDBD'}]}
       placeholder='Місцевість...'
     >
-      {photo ? `${locationName}` : `Місцевість...`}
+      {locationName ? `${locationName}` : `Місцевість...`}
     </Text>
     <GeoIcon style={{ position: 'absolute', top: 11 }} />
   </View>

@@ -58,7 +58,7 @@ export default function App() {
         <MainStack.Screen name="Registration" component={RegistrationScreen} options={optionsFn("Реєстрація", false)} />
         <MainStack.Screen name="Login" component={LoginScreen} options={optionsFn("Авторизація", false)} />
         <MainStack.Screen name="Home" component={Home} options={optionsFn("Home", false)} />
-        <MainStack.Screen name="CommentsScreen" component={CommentsScreen} options={{ ...optionsFn("Створити публікацію", true, true), tabBarStyle: { display: 'none' } }} />
+        <MainStack.Screen name="CommentsScreen" component={CommentsScreen} options={{ ...optionsFn("Коментарі", true, true), tabBarStyle: { display: 'none' } }} />
         <MainStack.Screen name="MapScreen" component={MapScreen} options={optionsFn("MapScreen", false)} />
         <MainStack.Screen name="Camera" component={PhoneCamera} options={optionsFn("Camera", false)} />
         <MainStack.Screen name="Map" component={Map} options={optionsFn("Map", false)} />
