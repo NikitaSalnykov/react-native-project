@@ -8,8 +8,10 @@ import {
   Text,
   View,
   TextInput,
+  TouchableOpacity,
 } from "react-native";
 import Container from "../../Components/Container";
+import SendIcon from "../../assets/svg/send.svg";
 
 const CommentsScreen = () => {
   const navigation = useNavigation();
@@ -113,13 +115,16 @@ const CommentsScreen = () => {
             <View
               style={{
                 width: "100%",
-                borderRadius: 20,
+                borderRadius: 50,
                 backgroundColor: "#E8E8E8",
                 borderWidth: 1,
                 borderColor: "silver",
                 justifyContent: "center",
                 padding: 16,
                 paddingTop: 12,
+                paddingRight: 0,
+                flexDirection: "row",
+                alignItems: "center",
               }}
             >
               <TextInput
@@ -133,6 +138,24 @@ const CommentsScreen = () => {
                 autoGrow={true} // Для автоматического изменения высоты
                 scrollEnabled={true} // Разрешаем прокрутку, если текст не помещается
               ></TextInput>
+              <TouchableOpacity
+                onPress={() => {
+                  console.log(1);
+                }}
+              >
+                <View
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: 50,
+                    backgroundColor: "#FF6C00",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <SendIcon style={{ color: "white" }} />
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
         </KeyboardAvoidingView>
