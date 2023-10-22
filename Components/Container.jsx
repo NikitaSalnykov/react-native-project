@@ -1,13 +1,9 @@
-import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import React from "react";
+import { StyleSheet, View } from "react-native";
 
-const Container = ({children}) => {
-  return (
-    <View style={[styles.container, {flex: 1}]}>
-      {children}
-     </View>
-  )
-}
+const Container = ({ children }) => {
+  return <View style={[styles.container, { flex: 1 }]}>{children}</View>;
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -18,10 +14,8 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     paddingTop: 32,
     alignItems: "start",
-    
   },
-  customImageStyle: {
-  },
-})
+  customImageStyle: {},
+});
 
-export default Container
+export default Container;
