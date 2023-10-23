@@ -3,7 +3,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import "react-native-gesture-handler";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-
 import RegistrationScreen from "./Screens/RegistrationScreen/RegistrationScreen";
 import LoginScreen from "./Screens/LoginScreen/LoginScreen";
 import Home from "./Screens/Home/Home";
@@ -12,9 +11,10 @@ import MapScreen from "./Screens/MapScreen/MapScreen";
 import PhoneCamera from "./Screens/Camera";
 import Map from "./Screens/Map";
 import LogoutButton from "./Components/LogoutButton.jsx";
-import BackPage from "./assets/svg/back";
-import { TouchableOpacity } from "react-native";
 import BackPageButton from "./Components/BackPageButton";
+import { Provider } from "react-redux";
+import store, { persistor } from "./redux/store";
+import { PersistGate } from "redux-persist/integration/react";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -52,57 +52,51 @@ export default function App() {
   };
 
   return (
-    <NavigationContainer>
-      <MainStack.Navigator initialRouteName="Home">
-<<<<<<< HEAD
-        <MainStack.Screen
-          name="Registration"
-          component={RegistrationScreen}
-          options={optionsFn("Реєстрація", false)}
-        />
-        <MainStack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={optionsFn("Авторизація", false)}
-        />
-        <MainStack.Screen
-          name="Home"
-          component={Home}
-          options={optionsFn("Home", false)}
-        />
-        <MainStack.Screen
-          name="CommentsScreen"
-          component={CommentsScreen}
-          options={{
-            ...optionsFn("Коментарі", true, true),
-            tabBarStyle: { display: "none" },
-          }}
-        />
-        <MainStack.Screen
-          name="MapScreen"
-          component={MapScreen}
-          options={optionsFn("MapScreen", false)}
-        />
-        <MainStack.Screen
-          name="Camera"
-          component={PhoneCamera}
-          options={optionsFn("Camera", false)}
-        />
-        <MainStack.Screen
-          name="Map"
-          component={Map}
-          options={optionsFn("Map", false)}
-        />
-=======
-        <MainStack.Screen name="Registration" component={RegistrationScreen} options={optionsFn("Реєстрація", false)} />
-        <MainStack.Screen name="Login" component={LoginScreen} options={optionsFn("Авторизація", false)} />
-        <MainStack.Screen name="Home" component={Home} options={optionsFn("Home", false)} />
-        <MainStack.Screen name="CommentsScreen" component={CommentsScreen} options={{ ...optionsFn("Коментарі", true, true), tabBarStyle: { display: 'none' } }} />
-        <MainStack.Screen name="MapScreen" component={MapScreen} options={optionsFn("MapScreen", false)} />
-        <MainStack.Screen name="Camera" component={PhoneCamera} options={optionsFn("Camera", false)} />
-        <MainStack.Screen name="Map" component={Map} options={optionsFn("Map", false)} />
->>>>>>> b1698fa1e4732f2e8869c7273a0fe102b1b48d1c
-      </MainStack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <NavigationContainer>
+          <MainStack.Navigator initialRouteName="Home">
+            <MainStack.Screen
+              name="Registration"
+              component={RegistrationScreen}
+              options={optionsFn("Реєстрація", false)}
+            />
+            <MainStack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={optionsFn("Авторизація", false)}
+            />
+            <MainStack.Screen
+              name="Home"
+              component={Home}
+              options={optionsFn("Home", false)}
+            />
+            <MainStack.Screen
+              name="CommentsScreen"
+              component={CommentsScreen}
+              options={{
+                ...optionsFn("Коментарі", true, true),
+                tabBarStyle: { display: "none" },
+              }}
+            />
+            <MainStack.Screen
+              name="MapScreen"
+              component={MapScreen}
+              options={optionsFn("MapScreen", false)}
+            />
+            <MainStack.Screen
+              name="Camera"
+              component={PhoneCamera}
+              options={optionsFn("Camera", false)}
+            />
+            <MainStack.Screen
+              name="Map"
+              component={Map}
+              options={optionsFn("Map", false)}
+            />
+          </MainStack.Navigator>
+        </NavigationContainer>
+      </PersistGate>
+    </Provider>
   );
 }
