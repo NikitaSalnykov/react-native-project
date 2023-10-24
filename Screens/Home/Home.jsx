@@ -48,6 +48,7 @@ const Home = () => {
        initialRouteName="Posts" 
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
+            
             const buttonStyles = {
             backgroundColor: focused ? "#FF6C00" : "transparent",
             borderRadius: 20, 
@@ -56,7 +57,7 @@ const Home = () => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-          };
+          }
 
           if (route.name === "Posts") {
             return (<View style={buttonStyles}>
@@ -103,3 +104,4 @@ const styles = StyleSheet.create({
 });
 
 export default Home;
+

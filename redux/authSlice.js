@@ -12,21 +12,21 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     registerUser(state, { payload }) {
-      (state.name = payload.name),
-        (state.email = payload.email),
-        (state.password = payload.password),
-        (state.token = payload.token);
+      state.name = payload.name;
+      state.email = payload.email;
+      state.password = payload.password;
+      state.token = payload.token;
     },
     loginUser(state, { payload }) {
-      (state.email = payload.email),
-        (state.password = payload.password),
-        (state.token = payload.token);
+      state.email = payload.email;
+      state.password = payload.password;
+      state.token = payload.token;
     },
     logoutUser(state) {
-      (state.name = ""),
-        (state.email = ""),
-        (state.password = ""),
-        (state.token = null);
+      state.name = "";
+      state.email = "";
+      state.password = "";
+      state.token = null;
     },
   },
 });

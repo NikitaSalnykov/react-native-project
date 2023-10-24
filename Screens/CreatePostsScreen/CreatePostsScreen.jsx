@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Keyboard, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View, TouchableOpacity, Image } from 'react-native';
 import Container from '../../Components/Container';
-import PhotoIcon from '../../assets/svg/camera';
+import PhotoIcon from '../../assets/svg/camera.svg';
 import GeoIcon from '../../assets/svg/geo.svg';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
-import Trash from '../../assets/svg/trash'
+import Trash from '../../assets/svg/trash.svg'
 import * as Location from "expo-location";
 import axios from 'axios';
 

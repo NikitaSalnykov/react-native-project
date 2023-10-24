@@ -19,7 +19,7 @@ const persistConfig = {
 
 const reducer = persistReducer(persistConfig, authReducer);
 
-const store = configureStore({
+export const store = configureStore({
   reducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -29,6 +29,6 @@ const store = configureStore({
     }),
 });
 
-const persistor = persistStore(store);
+export const persistor = persistStore(store);
 
-export default { store, persistor };
+

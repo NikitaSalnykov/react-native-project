@@ -13,8 +13,15 @@ import Map from "./Screens/Map";
 import LogoutButton from "./Components/LogoutButton.jsx";
 import BackPageButton from "./Components/BackPageButton";
 import { Provider } from "react-redux";
-import store, { persistor } from "./redux/store";
+import { store, persistor } from "./redux/store";
 import { PersistGate } from "redux-persist/integration/react";
+import { 
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  updateProfile
+} from 'firebase/auth';
+import { auth } from './config';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -50,6 +57,7 @@ export default function App() {
       headerLeft: () => back && <BackPageButton />,
     };
   };
+
 
   return (
     <Provider store={store}>
