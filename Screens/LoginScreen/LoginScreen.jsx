@@ -3,6 +3,13 @@ import { Alert, StyleSheet, Text, TextInput, View } from 'react-native'
 import AuthButton from '../../Components/AuthButton';
 import Container from '../../Components/AuthWrapper';
 import { useNavigation } from '@react-navigation/native';
+import { 
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  updateProfile
+} from 'firebase/auth'
+import { auth } from "../../config"
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -18,7 +25,7 @@ const LoginScreen = () => {
     if (email && password) setDisable(false)
   }, [ email, password])
 
-   const handleSubmit = () => {
+   const handleSubmit = async () => {
     
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
     
@@ -33,13 +40,16 @@ const LoginScreen = () => {
       return;
     }
 
-    console.log({
-      email: email.trim(), password: password.trim()
-    });
-     
-    setDisable(true)
-    navigation.navigate("Home")
-
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        dispatch(setUser({email: user.email, id: user.uid, token: user.accessToken, userName: login}))
+        setDisable(true)
+        navigation.navigate("Home")
+      } catch (error) {
+        Alert.alert('Error', error.message);
+      } 
   }
 
   const onChangeEmail = (event) => {

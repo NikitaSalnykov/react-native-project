@@ -10,8 +10,13 @@ import CreatePostsScreen from "../CreatePostsScreen/CreatePostsScreen"
 import ProfileScreen from "../ProfileScreen/ProfileScreen"
 import LogoutButton from "../../Components/LogoutButton";
 import { useNavigation } from "@react-navigation/native"; 
+import { useSelector } from "react-redux";
 
 const Home = () => {
+
+  const auth = useSelector(state => state.auth)
+  console.log(auth);
+
   const navigation = useNavigation();
   const Tabs = createBottomTabNavigator();
 

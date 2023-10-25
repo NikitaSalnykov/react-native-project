@@ -5,6 +5,17 @@ import { useNavigation } from '@react-navigation/native';
 import Container from '../../Components/AuthWrapper';
 import AuthButton from '../../Components/AuthButton';
 
+import { 
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  updateProfile
+} from 'firebase/auth'
+import { auth } from "../../config"
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../redux/authSlice';
+
+
 function RegistrationScreen() {
   const [login, setLogin] = useState('');
   const [email, setEmail] = useState('');
@@ -15,14 +26,15 @@ function RegistrationScreen() {
   const [showPassword, setShowPassword] = useState(false)
   const [disabled, setDisable] = useState(true)
   const navigation = useNavigation();
+  
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (login && email && password) setDisable(false)
   }, [login, email, password])
   
-
-  
-  const handleSubmit = () => {
+ 
+  const handleSubmit = async () => {
     
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
     
@@ -43,18 +55,30 @@ function RegistrationScreen() {
       return;
     }
 
-    console.log({
-      login: login.trim(), email: email.trim(), password: password.trim()
-    });
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-    setDisable(true)
-    navigation.navigate("Home")
+      await updateProfile(user, {
+        displayName: login,
+      });
+      
+      dispatch(setUser({email: user.email, id: user.uid, token: user.accessToken, userName: login}))
+      setDisable(true);
+
+      navigation.navigate("Home");
+    } catch (error) {
+      // Обработка ошибки создания пользователя
+      Alert.alert('Error', error.message);
+    }
+    
   }
 
   const onChangeLogin = (event) => {
     setLogin(event)
 
   }
+
   const onChangeEmail = (event) => {
     setEmail(event)
   }
@@ -78,6 +102,7 @@ const checkValidLogin = () => {
         return setinValidEmail(false);
   }
 };
+
   const checkValidPassword = () => {
     if (password.length < 6) {
         return setinValidPassword(true);
