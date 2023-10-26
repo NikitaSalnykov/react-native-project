@@ -9,7 +9,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  updateProfile
+  updateProfile,
+  sendEmailVerification
 } from 'firebase/auth'
 import { auth } from "../../config"
 import { useDispatch } from 'react-redux';
@@ -25,9 +26,12 @@ function RegistrationScreen() {
   const [inValidPassword, setinValidPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false)
   const [disabled, setDisable] = useState(true)
+ 
   const navigation = useNavigation();
-  
   const dispatch = useDispatch()
+  
+  auth.useDeviceLanguage(); // Use the device's language for verification emails
+  auth.settings.sendEmailVerification = true;
 
   useEffect(() => {
     if (login && email && password) setDisable(false)
@@ -66,7 +70,9 @@ function RegistrationScreen() {
       dispatch(setUser({email: user.email, id: user.uid, token: user.accessToken, userName: login}))
       setDisable(true);
 
+      await sendEmailVerification(user);
       navigation.navigate("Home");
+
     } catch (error) {
       // Обработка ошибки создания пользователя
       Alert.alert('Error', error.message);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import PostsIcon from "../../assets/svg/posts.svg"
@@ -11,14 +11,21 @@ import ProfileScreen from "../ProfileScreen/ProfileScreen"
 import LogoutButton from "../../Components/LogoutButton";
 import { useNavigation } from "@react-navigation/native"; 
 import { useSelector } from "react-redux";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from '../../config'
+import { useAuth } from "../../hooks/useAuth";
 
 const Home = () => {
 
-  const auth = useSelector(state => state.auth)
-  console.log(auth);
-
   const navigation = useNavigation();
   const Tabs = createBottomTabNavigator();
+  const {isAuth, email} = useAuth()
+
+  useEffect(() => {
+      if (!isAuth) {
+        navigation.navigate("Login")
+      } 
+  }, []);
 
   const goBack = () => {
   navigation.goBack(); 

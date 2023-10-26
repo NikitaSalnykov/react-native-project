@@ -12,18 +12,35 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import CommentIcon from "../../assets/svg/comment.svg";
 import LikeIcon from "../../assets/svg/like.svg";
 import GeoIcon from "../../assets/svg/geo.svg";
+import { collection, getDocs } from 'firebase/firestore'; 
+import { db } from "../../config";
+import { useAuth } from '../../hooks/useAuth';
+
 
 const PostsScreen = () => {
   const route = useRoute();
   const newPost = route.params?.newPost || null;
+  const {id: userId} = useAuth()
   const [POSTS, setPOSTS] = useState([]);
 
   const navigation = useNavigation();
 
+     const getDataFromFirestore = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, 'posts'));
+        const postData = snapshot.docs.map((doc) => ({ postId: doc.id, ...doc.data() }));
+        const filteredPosts = postData.filter(el => el.authorId === userId).sort((a, b) => b.timestamp - a.timestamp)
+        setPOSTS(filteredPosts); // Обновляем состояние POSTS с полученными данными
+        console.log(POSTS);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    };
+
   useEffect(() => {
-    if (newPost) {
-      setPOSTS((prevPosts) => [...prevPosts, newPost]);
-    }
+    getDataFromFirestore();
+    console.log(POSTS);
   }, [newPost]);
 
   const handleMap = (location, locationName) => {
@@ -71,7 +88,7 @@ const PostsScreen = () => {
                   ]}
                 >
                   <Image
-                    source={{ uri: el.photo }}
+                    source={{ uri: el?.photo || "https://info.renome.ua/wp-content/uploads/2021/09/placeholder.png"}}
                     resizeMode="cover"
                     style={[
                       { height: "100%", width: "100%" },

@@ -10,6 +10,9 @@ import {
   updateProfile
 } from 'firebase/auth'
 import { auth } from "../../config"
+import { setUser } from '../../redux/authSlice';
+import { useDispatch } from 'react-redux';
+
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -20,6 +23,7 @@ const LoginScreen = () => {
   const [disabled, setDisable] = useState(true)
 
   const navigation = useNavigation();
+  const dispatch = useDispatch()
 
     useEffect(() => {
     if (email && password) setDisable(false)
@@ -44,7 +48,7 @@ const LoginScreen = () => {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         
-        dispatch(setUser({email: user.email, id: user.uid, token: user.accessToken, userName: login}))
+        dispatch(setUser({email: user.email, id: user.uid, token: user.accessToken, userName: user.displayName}))
         setDisable(true)
         navigation.navigate("Home")
       } catch (error) {

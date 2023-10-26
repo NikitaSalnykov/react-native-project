@@ -15,13 +15,6 @@ import BackPageButton from "./Components/BackPageButton";
 import { Provider } from "react-redux";
 import { store, persistor } from "./redux/store";
 import { PersistGate } from "redux-persist/integration/react";
-import { 
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  updateProfile
-} from 'firebase/auth';
-import { auth } from './config';
 
 export default function App() {
   const [fontsLoaded] = useFonts({

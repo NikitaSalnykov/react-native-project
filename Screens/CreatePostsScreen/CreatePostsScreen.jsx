@@ -8,10 +8,14 @@ import { useRoute } from '@react-navigation/native';
 import Trash from '../../assets/svg/trash.svg'
 import * as Location from "expo-location";
 import axios from 'axios';
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../../config";
+import { useAuth } from '../../hooks/useAuth';
+
 
 const CreatePostsScreen = () => {
   const route = useRoute();
-
+  const {id} = useAuth()
   const [photoDescription, setPhotoDescription] = useState('');
   const [photo, setPhoto] = useState(route.params ? route.params.cameraPhoto : null);
   const [geo, setGeo] = useState('');
@@ -76,7 +80,6 @@ const CreatePostsScreen = () => {
     setPhoto(route.params.cameraPhoto);
     if (location) {
     setGeo(locationName)
-    console.log(geo);
     }
   }
   }, [route.params])
@@ -85,16 +88,38 @@ const CreatePostsScreen = () => {
     setPhotoDescription(e)
   }
 
-  const handleSubmit = () => {
-    const newPost = {
-      photoDescription, locationName, photo, location, postId: photo.slice(0, -6)
+  const handleSubmit = async () => {
+  //   const newPost = {
+  //     photoDescription, locationName, photo, location, postId: photo.slice(0, -6)
+  //   }
+  //   console.log(photo.slice(-35, -4));
+  //   setPhotoDescription(''),
+  //   setGeo('')
+  //   setPhoto(null)
+  //   navigation.navigate("Posts", {newPost})
+  // const postId = photo.slice(-35, -4)
+  const timestamp = serverTimestamp();
+
+  const writeDataToFirestore = async () => {
+    try {
+      const docRef = await addDoc(collection(db, 'posts'), {
+        photoDescription, locationName, photo, location, authorId: id, timestamp
+      });
+      console.log('Document written with ID: ', docRef.id);
+      setPhotoDescription(''),
+      setGeo('')
+      setPhoto(null)
+      navigation.navigate("Posts", {newPost: docRef.id})
+    } catch (e) {
+      console.error('Error adding document: ', e);
+        throw e;
     }
-    console.log(photo.slice(-35, -4));
-    setPhotoDescription(''),
-    setGeo('')
-    setPhoto(null)
-    navigation.navigate("Posts", {newPost})
   };
+
+  await writeDataToFirestore()
+
+  };
+
 
   const handleCamera = () => {
     navigation.navigate("Camera")
