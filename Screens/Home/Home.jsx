@@ -56,7 +56,7 @@ const Home = () => {
   }
 
   return (
-    <Tabs.Navigator
+    isAuth && <Tabs.Navigator
        initialRouteName="Posts" 
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {

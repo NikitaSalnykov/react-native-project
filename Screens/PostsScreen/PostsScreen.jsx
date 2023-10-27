@@ -12,40 +12,49 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import CommentIcon from "../../assets/svg/comment.svg";
 import LikeIcon from "../../assets/svg/like.svg";
 import GeoIcon from "../../assets/svg/geo.svg";
-import { collection, getDocs } from 'firebase/firestore'; 
+import { collection, doc, deleteDoc, getDocs, updateDoc, getDoc } from 'firebase/firestore'; 
 import { db } from "../../config";
 import { useAuth } from '../../hooks/useAuth';
+import Trash from "../../assets/svg/trash.svg";
+import { deleteDataFromFirestore, getDataFromFirestore, getLikesFromFirestore } from "../../helpers/firebasePosts";
+import { useSelector } from "react-redux";
+
 
 
 const PostsScreen = () => {
   const route = useRoute();
   const newPost = route.params?.newPost || null;
-  const {id: userId} = useAuth()
+  const {id: userId, email} = useAuth()
+  const userName = useSelector(state => state.auth.userName)
   const [POSTS, setPOSTS] = useState([]);
 
   const navigation = useNavigation();
 
-     const getDataFromFirestore = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, 'posts'));
-        const postData = snapshot.docs.map((doc) => ({ postId: doc.id, ...doc.data() }));
-        const filteredPosts = postData.filter(el => el.authorId === userId).sort((a, b) => b.timestamp - a.timestamp)
-        setPOSTS(filteredPosts); // Обновляем состояние POSTS с полученными данными
-        console.log(POSTS);
-      } catch (error) {
-        console.log(error);
-        throw error;
-      }
-    };
-
   useEffect(() => {
-    getDataFromFirestore();
-    console.log(POSTS);
+    const fetchData = async () => {
+      const filteredPosts = await getDataFromFirestore(userId);
+      setPOSTS(filteredPosts);
+    };
+  
+    fetchData();
   }, [newPost]);
+
+  const handleDelete = async (collectionName, docId) => {
+    await deleteDataFromFirestore(collectionName, docId)
+    const filteredPosts = await getDataFromFirestore(userId);
+    setPOSTS(filteredPosts);
+    };
 
   const handleMap = (location, locationName) => {
     navigation.navigate("Map", { location, locationName, back: "Home" });
   };
+
+  const handleLike = async (collectionName, docId, userId) => {
+    await getLikesFromFirestore(collectionName, docId, userId)
+    const filteredPosts = await getDataFromFirestore(userId);
+    setPOSTS(filteredPosts);
+  }
+
 
   return (
     <Container>
@@ -53,10 +62,10 @@ const PostsScreen = () => {
         <View style={styles.avatarBox}></View>
         <View>
           <Text style={[styles.text, { fontWeight: 700, fontSize: 16 }]}>
-            Nikita Salnikov
+            {userName}
           </Text>
           <Text style={[styles.text, { fontSize: 11, opacity: 0.8 }]}>
-            nikita@gmail.com
+            {email}
           </Text>
         </View>
       </View>
@@ -95,6 +104,9 @@ const PostsScreen = () => {
                       !el.photoDescription && { marginBottom: 16 },
                     ]}
                   />
+                  <TouchableOpacity style={{position: "absolute", top: 0, right: 0, padding: 10, opacity: 0.7}} onPress={() => handleDelete('posts', el.postId)}> 
+                  <Trash style={{color: "white"}} />
+                  </TouchableOpacity>
                 </View>
                 {el.photoDescription && (
                   <Text
@@ -114,6 +126,7 @@ const PostsScreen = () => {
                       onPress={() => {
                         navigation.navigate("CommentsScreen", {
                           photo: el.photo,
+                          postId: el.postId
                         });
                       }}
                     >
@@ -128,16 +141,16 @@ const PostsScreen = () => {
                         <Text style={styles.text}>0</Text>
                       </View>
                     </TouchableOpacity>
-                    <View
-                      style={{
+                    <TouchableOpacity
+                      style={[{
                         flexDirection: "row",
                         gap: 6,
                         alignItems: "center",
-                      }}
+                      }]} onPress={()=>{handleLike('posts', el.postId, userId)}}
                     >
-                      <LikeIcon />
-                      <Text style={styles.text}>0</Text>
-                    </View>
+                      <LikeIcon style={el.likes.includes(userId) ? { color : "#FF6C00" } : {color : "#FF6C00", opacity: 0.6}}/>
+                      <Text style={styles.text}>{el.likes.length}</Text>
+                    </TouchableOpacity>
                   </View>
                   <TouchableOpacity
                     onPress={() => {

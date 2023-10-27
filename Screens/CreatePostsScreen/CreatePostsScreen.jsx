@@ -11,6 +11,7 @@ import axios from 'axios';
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../config";
 import { useAuth } from '../../hooks/useAuth';
+import { writeDataToFirestore } from '../../helpers/firebasePosts';
 
 
 const CreatePostsScreen = () => {
@@ -89,35 +90,16 @@ const CreatePostsScreen = () => {
   }
 
   const handleSubmit = async () => {
-  //   const newPost = {
-  //     photoDescription, locationName, photo, location, postId: photo.slice(0, -6)
-  //   }
-  //   console.log(photo.slice(-35, -4));
-  //   setPhotoDescription(''),
-  //   setGeo('')
-  //   setPhoto(null)
-  //   navigation.navigate("Posts", {newPost})
-  // const postId = photo.slice(-35, -4)
   const timestamp = serverTimestamp();
-
-  const writeDataToFirestore = async () => {
-    try {
-      const docRef = await addDoc(collection(db, 'posts'), {
-        photoDescription, locationName, photo, location, authorId: id, timestamp
-      });
-      console.log('Document written with ID: ', docRef.id);
-      setPhotoDescription(''),
-      setGeo('')
-      setPhoto(null)
-      navigation.navigate("Posts", {newPost: docRef.id})
-    } catch (e) {
-      console.error('Error adding document: ', e);
-        throw e;
-    }
-  };
-
-  await writeDataToFirestore()
-
+  try {
+    await writeDataToFirestore(photoDescription, locationName, photo, location, id, timestamp);
+    navigation.navigate("Posts", { newPost: timestamp });
+    setPhotoDescription('');
+    setGeo('');
+    setPhoto(null);
+  } catch (error) {
+    console.error("Error writing data to Firestore:", error);
+  }
   };
 
 
@@ -128,7 +110,6 @@ const CreatePostsScreen = () => {
   const handleMap = () => {
     navigation.navigate("Map", {location, locationName, back: "NewPost"})
   };
-
 
   return (
     <Container>

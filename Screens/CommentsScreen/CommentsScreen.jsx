@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
@@ -12,13 +12,51 @@ import {
 } from "react-native";
 import Container from "../../Components/Container";
 import SendIcon from "../../assets/svg/send.svg";
+import { getDataFromFirestore } from "../../helpers/firebasePosts";
+import { getPostDataFromFirestore, writeCommentToFirestore } from "../../helpers/firebaseComments";
+import { useAuth } from "../../hooks/useAuth";
+import { useSelector } from "react-redux";
 
 const CommentsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const {id: userId} = useAuth()
+  const userName = useSelector(state => state.auth.userName)
 
-  const photo = route.params?.photo || null;
-  console.log(route.params);
+
+  const postId = route.params?.postId || null;
+  const [inputText, setInputText] = useState('')
+  const [post, setPost] = useState('')
+  const [comments, setComments] = useState('')
+
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      const postData = await getPostDataFromFirestore(postId);
+      setPost(postData)
+    };
+
+    fetchPost();
+
+    const fetchComments = async () => {
+      const commentData = await getPostDataFromFirestore(postId);
+      setComments(commentData)
+    };
+
+    fetchComments()
+
+  }, []);
+
+  console.log(comments);
+
+  const onChangeComment = (event) => {
+    setInputText(event)
+  }
+
+  const handleSubmit = () => {
+    writeCommentToFirestore(userId, userName, inputText, postId )
+    setInputText('')
+  }
 
   return (
     <Container>
@@ -38,7 +76,7 @@ const CommentsScreen = () => {
             ]}
           >
             <Image
-              source={{ uri: photo }}
+              source={{ uri: post.photo }}
               resizeMode="cover"
               style={[{ height: "100%", width: "100%" }]}
             />
@@ -62,6 +100,12 @@ const CommentsScreen = () => {
                   backgroundColor: "black",
                 }}
               ></Image>
+              {/* <View>
+                {comments.map(el => (
+                <View>
+
+                </View>))}
+              </View> */}
               <View
                 style={[
                   {
@@ -127,7 +171,9 @@ const CommentsScreen = () => {
                 alignItems: "center",
               }}
             >
-              <TextInput
+              <TextInput 
+              value={inputText} 
+              onChangeText={onChangeComment}
                 placeholder="Коментувати"
                 style={{
                   width: "80%",
@@ -139,9 +185,7 @@ const CommentsScreen = () => {
                 scrollEnabled={true} // Разрешаем прокрутку, если текст не помещается
               ></TextInput>
               <TouchableOpacity
-                onPress={() => {
-                  console.log(1);
-                }}
+                onPress={handleSubmit}
               >
                 <View
                   style={{
