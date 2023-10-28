@@ -12,20 +12,30 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import CommentIcon from "../../assets/svg/comment.svg";
 import LikeIcon from "../../assets/svg/like.svg";
 import GeoIcon from "../../assets/svg/geo.svg";
-import { collection, doc, deleteDoc, getDocs, updateDoc, getDoc } from 'firebase/firestore'; 
+import {
+  collection,
+  doc,
+  deleteDoc,
+  getDocs,
+  updateDoc,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "../../config";
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from "../../hooks/useAuth";
 import Trash from "../../assets/svg/trash.svg";
-import { deleteDataFromFirestore, getDataFromFirestore, getLikesFromFirestore } from "../../helpers/firebasePosts";
+import {
+  deleteDataFromFirestore,
+  deleteImageFromStorage,
+  getDataFromFirestore,
+  getLikesFromFirestore,
+} from "../../helpers/firebasePosts";
 import { useSelector } from "react-redux";
-
-
 
 const PostsScreen = () => {
   const route = useRoute();
   const newPost = route.params?.newPost || null;
-  const {id: userId, email} = useAuth()
-  const userName = useSelector(state => state.auth.userName)
+  const { id: userId, email } = useAuth();
+  const userName = useSelector((state) => state.auth.userName);
   const [POSTS, setPOSTS] = useState([]);
 
   const navigation = useNavigation();
@@ -35,26 +45,26 @@ const PostsScreen = () => {
       const filteredPosts = await getDataFromFirestore(userId);
       setPOSTS(filteredPosts);
     };
-  
+
     fetchData();
   }, [newPost]);
 
-  const handleDelete = async (collectionName, docId) => {
-    await deleteDataFromFirestore(collectionName, docId)
+  const handleDelete = async (collectionName, docId, photoName) => {
+    await deleteDataFromFirestore(collectionName, docId);
+    await deleteImageFromStorage(photoName);
     const filteredPosts = await getDataFromFirestore(userId);
     setPOSTS(filteredPosts);
-    };
+  };
 
   const handleMap = (location, locationName) => {
     navigation.navigate("Map", { location, locationName, back: "Home" });
   };
 
   const handleLike = async (collectionName, docId, userId) => {
-    await getLikesFromFirestore(collectionName, docId, userId)
+    await getLikesFromFirestore(collectionName, docId, userId);
     const filteredPosts = await getDataFromFirestore(userId);
     setPOSTS(filteredPosts);
-  }
-
+  };
 
   return (
     <Container>
@@ -97,15 +107,30 @@ const PostsScreen = () => {
                   ]}
                 >
                   <Image
-                    source={{ uri: el?.photo || "https://info.renome.ua/wp-content/uploads/2021/09/placeholder.png"}}
+                    source={{
+                      uri:
+                        el?.photo ||
+                        "https://info.renome.ua/wp-content/uploads/2021/09/placeholder.png",
+                    }}
                     resizeMode="cover"
                     style={[
                       { height: "100%", width: "100%" },
                       !el.photoDescription && { marginBottom: 16 },
                     ]}
                   />
-                  <TouchableOpacity style={{position: "absolute", top: 0, right: 0, padding: 10, opacity: 0.7}} onPress={() => handleDelete('posts', el.postId)}> 
-                  <Trash style={{color: "white"}} />
+                  <TouchableOpacity
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      padding: 10,
+                      opacity: 0.7,
+                    }}
+                    onPress={() =>
+                      handleDelete("posts", el.postId, el.photoName)
+                    }
+                  >
+                    <Trash style={{ color: "white" }} />
                   </TouchableOpacity>
                 </View>
                 {el.photoDescription && (
@@ -126,7 +151,7 @@ const PostsScreen = () => {
                       onPress={() => {
                         navigation.navigate("CommentsScreen", {
                           photo: el.photo,
-                          postId: el.postId
+                          postId: el.postId,
                         });
                       }}
                     >
@@ -142,13 +167,24 @@ const PostsScreen = () => {
                       </View>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={[{
-                        flexDirection: "row",
-                        gap: 6,
-                        alignItems: "center",
-                      }]} onPress={()=>{handleLike('posts', el.postId, userId)}}
+                      style={[
+                        {
+                          flexDirection: "row",
+                          gap: 6,
+                          alignItems: "center",
+                        },
+                      ]}
+                      onPress={() => {
+                        handleLike("posts", el.postId, userId);
+                      }}
                     >
-                      <LikeIcon style={el.likes.includes(userId) ? { color : "#FF6C00" } : {color : "#FF6C00", opacity: 0.6}}/>
+                      <LikeIcon
+                        style={
+                          el.likes.includes(userId)
+                            ? { color: "#FF6C00" }
+                            : { color: "#FF6C00", opacity: 0.6 }
+                        }
+                      />
                       <Text style={styles.text}>{el.likes.length}</Text>
                     </TouchableOpacity>
                   </View>

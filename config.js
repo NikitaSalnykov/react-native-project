@@ -6,15 +6,17 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 // Функція для підключення сховища файлів в проект
 import { getStorage } from "firebase/storage";
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 
-import {REACT_APP_FIREBASE_KEY,
+import {
+  REACT_APP_FIREBASE_KEY,
   REACT_APP_FIREBASE_AUTH_DOMAIN,
   REACT_APP_FIREBASE_PROJECT_ID,
   REACT_APP_FIREBASE_STORAGE_BUCKET,
   REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  REACT_APP_FIREBASE_APP_ID} from "@env"
+  REACT_APP_FIREBASE_APP_ID,
+} from "@env";
 
 const firebaseConfig = {
   apiKey: REACT_APP_FIREBASE_KEY,
@@ -22,13 +24,13 @@ const firebaseConfig = {
   projectId: REACT_APP_FIREBASE_PROJECT_ID,
   storageBucket: REACT_APP_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: REACT_APP_FIREBASE_APP_ID
+  appId: REACT_APP_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
 
 initializeAuth(app, {
-  persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });
 
 export const auth = getAuth(app);

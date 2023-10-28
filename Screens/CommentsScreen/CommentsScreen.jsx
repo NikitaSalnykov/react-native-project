@@ -12,51 +12,48 @@ import {
 } from "react-native";
 import Container from "../../Components/Container";
 import SendIcon from "../../assets/svg/send.svg";
-import { getDataFromFirestore } from "../../helpers/firebasePosts";
-import { getPostDataFromFirestore, writeCommentToFirestore } from "../../helpers/firebaseComments";
 import { useAuth } from "../../hooks/useAuth";
 import { useSelector } from "react-redux";
+import {
+  getCommentsDataFromFirestore,
+  getPostDataFromFirestore,
+  writeCommentToFirestore,
+} from "../../helpers/firebaseComments";
 
 const CommentsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const {id: userId} = useAuth()
-  const userName = useSelector(state => state.auth.userName)
-
+  const { id: userId } = useAuth();
+  const userName = useSelector((state) => state.auth.userName);
 
   const postId = route.params?.postId || null;
-  const [inputText, setInputText] = useState('')
-  const [post, setPost] = useState('')
-  const [comments, setComments] = useState('')
-
+  const [inputText, setInputText] = useState("");
+  const [post, setPost] = useState("");
+  const [comments, setComments] = useState("");
+  const [postIsLoading, setPostIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchPost = async () => {
       const postData = await getPostDataFromFirestore(postId);
-      setPost(postData)
+      setPostIsLoading(false);
+      setPost(postData);
+      setComments(postData.comments || []);
     };
 
     fetchPost();
-
-    const fetchComments = async () => {
-      const commentData = await getPostDataFromFirestore(postId);
-      setComments(commentData)
-    };
-
-    fetchComments()
-
+    console.log(post.comments);
   }, []);
 
-  console.log(comments);
-
   const onChangeComment = (event) => {
-    setInputText(event)
-  }
+    setInputText(event);
+  };
 
-  const handleSubmit = () => {
-    writeCommentToFirestore(userId, userName, inputText, postId )
-    setInputText('')
-  }
+  const handleSubmit = async () => {
+    await writeCommentToFirestore(postId, inputText, userName, userId);
+    setInputText("");
+    const postData = await getPostDataFromFirestore(postId);
+    setComments(postData.comments);
+  };
 
   return (
     <Container>
@@ -75,73 +72,82 @@ const CommentsScreen = () => {
               },
             ]}
           >
-            <Image
-              source={{ uri: post.photo }}
-              resizeMode="cover"
-              style={[{ height: "100%", width: "100%" }]}
-            />
-          </View>
-          <View style={{ marginTop: 34, width: "100%" }}>
-            <View
-              style={[
-                {
-                  gap: 16,
-                  flexDirection: "row",
-                  width: "100%",
-                },
-                false && { flexDirection: "row-reverse" },
-              ]}
-            >
+            {!postIsLoading ? (
               <Image
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 50,
-                  backgroundColor: "black",
-                }}
-              ></Image>
-              {/* <View>
-                {comments.map(el => (
-                <View>
-
-                </View>))}
-              </View> */}
-              <View
+                source={{ uri: post.photo }}
+                resizeMode="cover"
                 style={[
                   {
-                    backgroundColor: "#F6F6F6",
-                    padding: 16,
-                    width: "85%",
                     height: "100%",
-                    borderRadius: 10,
-                    borderTopLeftRadius: 0,
-                  },
-                  false && {
-                    borderTopRightRadius: "row-reverse",
-                    borderTopLeftRadius: 10,
+                    width: "100%",
+                    backgroundColor: "#bdbdbd73",
                   },
                 ]}
-              >
-                <Text
-                  style={{
-                    fontFamily: "Roboto-Regular",
-                    fontSize: 16,
-                    marginBottom: 8,
-                  }}
-                >
-                  dasdasda
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: "Roboto-Regular",
-                    fontSize: 10,
-                    color: "#BDBDBD",
-                  }}
-                >
-                  dasdasda
-                </Text>
+              />
+            ) : (
+              <Text>Loading</Text>
+            )}
+          </View>
+          <View style={{ marginTop: 34, width: "100%" }}>
+            {comments && (
+              <View style={{ gap: 16 }}>
+                {comments.map((el) => (
+                  <View
+                    style={[
+                      { flexDirection: "row", width: "100%", gap: 16 },
+                      el.userId === userId && {
+                        flexDirection: "row-reverse",
+                      },
+                    ]}
+                    key={el.timestamp}
+                  >
+                    <Image
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 50,
+                        backgroundColor: "black",
+                      }}
+                    ></Image>
+                    <View
+                      style={[
+                        {
+                          backgroundColor: "#F6F6F6",
+                          padding: 16,
+                          width: "85%",
+                          height: "100%",
+                          borderRadius: 10,
+                          borderTopLeftRadius: 0,
+                        },
+                        el.userId === userId && {
+                          borderTopRightRadius: "row-reverse",
+                          borderTopLeftRadius: 10,
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={{
+                          fontFamily: "Roboto-Regular",
+                          fontSize: 16,
+                          marginBottom: 8,
+                        }}
+                      >
+                        {el.text}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: "Roboto-Regular",
+                          fontSize: 10,
+                          color: "#BDBDBD",
+                        }}
+                      >
+                        {el.authorName}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
               </View>
-            </View>
+            )}
           </View>
         </ScrollView>
         <KeyboardAvoidingView
@@ -171,9 +177,9 @@ const CommentsScreen = () => {
                 alignItems: "center",
               }}
             >
-              <TextInput 
-              value={inputText} 
-              onChangeText={onChangeComment}
+              <TextInput
+                value={inputText}
+                onChangeText={onChangeComment}
                 placeholder="Коментувати"
                 style={{
                   width: "80%",
@@ -184,9 +190,7 @@ const CommentsScreen = () => {
                 autoGrow={true} // Для автоматического изменения высоты
                 scrollEnabled={true} // Разрешаем прокрутку, если текст не помещается
               ></TextInput>
-              <TouchableOpacity
-                onPress={handleSubmit}
-              >
+              <TouchableOpacity onPress={handleSubmit}>
                 <View
                   style={{
                     width: 34,
