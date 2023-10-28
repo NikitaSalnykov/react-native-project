@@ -14,6 +14,7 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
+import * as ImageManipulator from "expo-image-manipulator";
 
 export const getDataFromFirestore = async (userId) => {
   try {
@@ -34,8 +35,16 @@ export const getDataFromFirestore = async (userId) => {
 
 export const uploadImageToStorage = async (imageUri) => {
   try {
-    const response = await fetch(imageUri);
-    const blob = await response.blob();
+    const resizedPhoto = await ImageManipulator.manipulateAsync(
+      imageUri,
+      [{ resize: { width: 800 } }],
+      { compress: 0.9, format: "jpeg" }
+    );
+
+    const blob = await fetch(resizedPhoto.uri).then((response) =>
+      response.blob()
+    );
+
     const photoName = `${Date.now()}.jpg`;
     const imageRef = ref(storage, `images/${photoName}`);
     const uploadTaskSnapshot = await uploadBytes(imageRef, blob);

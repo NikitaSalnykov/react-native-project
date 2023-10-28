@@ -32,6 +32,7 @@ const CreatePostsScreen = () => {
   const [photo, setPhoto] = useState(
     route.params ? route.params.cameraPhoto : null
   );
+  const [disabled, setDisabled] = useState(true);
   const [geo, setGeo] = useState("");
 
   const navigation = useNavigation();
@@ -93,6 +94,7 @@ const CreatePostsScreen = () => {
   useEffect(() => {
     if (route.params) {
       setPhoto(route.params.cameraPhoto);
+      setDisabled(false);
       if (location) {
         setGeo(locationName);
       }
@@ -105,7 +107,7 @@ const CreatePostsScreen = () => {
 
   const handleSubmit = async () => {
     const timestamp = serverTimestamp();
-
+    setDisabled(true);
     try {
       const { imageUrl, photoName } = await uploadImageToStorage(photo);
       if (imageUrl) {
@@ -123,6 +125,7 @@ const CreatePostsScreen = () => {
         setPhoto(null);
         navigation.navigate("Posts", { newPost: timestamp });
       } else {
+        setDisabled(false);
         console.error("Image upload failed.");
       }
     } catch (error) {
@@ -222,11 +225,14 @@ const CreatePostsScreen = () => {
         </View>
       </View>
       <TouchableOpacity
-        onPress={photo ? handleSubmit : null}
-        style={[styles.buttonWrapper, !photo && { backgroundColor: "#F6F6F6" }]}
+        onPress={!disabled ? handleSubmit : null}
+        style={[
+          styles.buttonWrapper,
+          disabled && { backgroundColor: "#F6F6F6" },
+        ]}
       >
         <Text
-          style={[styles.button, !photo && { color: "#BDBDBD" }]}
+          style={[styles.button, disabled && { color: "#BDBDBD" }]}
           title={"Опубліковати"}
         >
           Опубліковати
@@ -235,7 +241,10 @@ const CreatePostsScreen = () => {
 
       <TouchableOpacity
         onPress={() => {
-          setPhotoDescription(""), setGeo(""), setPhoto(null);
+          setPhotoDescription(""),
+            setGeo(""),
+            setPhoto(null),
+            setDisabled(true);
         }}
         style={{ flex: 1, position: "absolute", bottom: 30, left: "45%" }}
       >
