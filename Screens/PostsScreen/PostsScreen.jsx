@@ -8,7 +8,11 @@ import {
   View,
 } from "react-native";
 import Container from "../../Components/Container";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import CommentIcon from "../../assets/svg/comment.svg";
 import LikeIcon from "../../assets/svg/like.svg";
 import GeoIcon from "../../assets/svg/geo.svg";
@@ -35,14 +39,16 @@ const PostsScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const filteredPosts = await getDataFromFirestore(userId);
-      dispatch(setPosts(filteredPosts));
-    };
+  const fetchData = async () => {
+    const filteredPosts = await getDataFromFirestore(userId);
+    dispatch(setPosts(filteredPosts));
+  };
 
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
     fetchData();
-  }, [newPost]);
+  }, [isFocused]);
 
   const handleDelete = async (collectionName, docId, photoName) => {
     await deleteDataFromFirestore(collectionName, docId);

@@ -169,7 +169,7 @@ function RegistrationScreen() {
         <View style={styles.avatarContainer}>
           {avatar && (
             <Image
-              source={{ uri: avatar.imageUrl }}
+              source={{ uri: avatar }}
               style={{ width: "100%", flex: 1, borderRadius: 16 }}
             />
           )}
