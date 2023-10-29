@@ -12,15 +12,6 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import CommentIcon from "../../assets/svg/comment.svg";
 import LikeIcon from "../../assets/svg/like.svg";
 import GeoIcon from "../../assets/svg/geo.svg";
-import {
-  collection,
-  doc,
-  deleteDoc,
-  getDocs,
-  updateDoc,
-  getDoc,
-} from "firebase/firestore";
-import { db } from "../../config";
 import { useAuth } from "../../hooks/useAuth";
 import Trash from "../../assets/svg/trash.svg";
 import {
@@ -29,21 +20,26 @@ import {
   getDataFromFirestore,
   getLikesFromFirestore,
 } from "../../helpers/firebasePosts";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import placeholderAvatar from "../../assets/emptyAvatar.png";
+import { setPosts } from "../../redux/postsSlice";
 
 const PostsScreen = () => {
   const route = useRoute();
   const newPost = route.params?.newPost || null;
   const { id: userId, email } = useAuth();
   const userName = useSelector((state) => state.auth.userName);
+  const avatar = useSelector((state) => state.auth.avatar);
   const [POSTS, setPOSTS] = useState([]);
+  const posts = useSelector((state) => state.posts.posts);
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchData = async () => {
       const filteredPosts = await getDataFromFirestore(userId);
-      setPOSTS(filteredPosts);
+      dispatch(setPosts(filteredPosts));
     };
 
     fetchData();
@@ -53,7 +49,7 @@ const PostsScreen = () => {
     await deleteDataFromFirestore(collectionName, docId);
     await deleteImageFromStorage(photoName);
     const filteredPosts = await getDataFromFirestore(userId);
-    setPOSTS(filteredPosts);
+    dispatch(setPosts(filteredPosts));
   };
 
   const handleMap = (location, locationName) => {
@@ -63,13 +59,27 @@ const PostsScreen = () => {
   const handleLike = async (collectionName, docId, userId) => {
     await getLikesFromFirestore(collectionName, docId, userId);
     const filteredPosts = await getDataFromFirestore(userId);
-    setPOSTS(filteredPosts);
+    dispatch(setPosts(filteredPosts));
   };
+
+  console.log(userName);
 
   return (
     <Container>
       <View style={[styles.profileContainer]}>
-        <View style={styles.avatarBox}></View>
+        <View style={styles.avatarBox}>
+          {avatar ? (
+            <Image
+              source={{ uri: avatar }}
+              style={{ width: "100%", flex: 1, borderRadius: 16 }}
+            />
+          ) : (
+            <Image
+              source={placeholderAvatar}
+              style={{ width: "100%", flex: 1, borderRadius: 16 }}
+            />
+          )}
+        </View>
         <View>
           <Text style={[styles.text, { fontWeight: 700, fontSize: 16 }]}>
             {userName}
@@ -90,7 +100,7 @@ const PostsScreen = () => {
       >
         <ScrollView showsVerticalScrollIndicator={false} style={{}}>
           <View style={{ gap: 40, paddingBottom: 80 }}>
-            {POSTS.map((el) => (
+            {posts.map((el) => (
               <View style={styles.postsContainer} key={el.postId}>
                 <View
                   style={[
@@ -230,7 +240,6 @@ const styles = StyleSheet.create({
   avatarBox: {
     width: 60,
     height: 60,
-    backgroundColor: "gold",
     borderRadius: 13,
   },
   text: {

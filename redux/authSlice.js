@@ -1,12 +1,10 @@
 const { createSlice } = require("@reduxjs/toolkit");
 
 const initialState = {
-  auth: {
-    userName: null,
-    email: null,
-    token: null,
-    id: null,
-  },
+  userName: null,
+  email: null,
+  token: null,
+  id: null,
 };
 
 const authSlice = createSlice({
@@ -14,16 +12,18 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser(state, { payload }) {
-      state.auth.userName = payload.userName;
-      state.auth.email = payload.email;
-      state.auth.token = payload.token;
-      state.auth.id = payload.id
+      state.userName = payload.userName;
+      state.email = payload.email;
+      state.token = payload.token;
+      state.id = payload.id;
+      state.avatar = payload.avatar;
     },
     removeUser(state) {
-      state.auth.userName = null;
-      state.auth.email = null;
-      state.auth.token = null;
-      state.auth.id = null
+      state.userName = null;
+      state.email = null;
+      state.token = null;
+      state.id = null;
+      state.avatar = null;
     },
   },
 });

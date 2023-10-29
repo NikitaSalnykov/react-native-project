@@ -106,7 +106,8 @@ const CreatePostsScreen = () => {
   };
 
   const handleSubmit = async () => {
-    const timestamp = serverTimestamp();
+    const timestamp = Date.now();
+
     setDisabled(true);
     try {
       const { imageUrl, photoName } = await uploadImageToStorage(photo);
