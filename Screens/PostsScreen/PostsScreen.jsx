@@ -45,7 +45,6 @@ const PostsScreen = () => {
   };
 
   const isFocused = useIsFocused();
-
   useEffect(() => {
     fetchData();
   }, [isFocused]);

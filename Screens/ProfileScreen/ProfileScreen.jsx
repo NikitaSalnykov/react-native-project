@@ -133,7 +133,7 @@ const ProfileScreen = () => {
         </View>
         <Text style={styles.title}>{userName}</Text>
         <ScrollView showsVerticalScrollIndicator={false} style={{}}>
-          <View style={{ gap: 40, paddingBottom: 80 }}>
+          <View style={{ gap: 40, paddingBottom: 180 }}>
             {posts.map((el) => (
               <View style={styles.postsContainer} key={el.postId}>
                 <View
