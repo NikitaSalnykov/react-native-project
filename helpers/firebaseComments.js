@@ -41,7 +41,7 @@ export const writeCommentToFirestore = async (
         text,
         authorName,
         userId,
-        timestamp: new Date(),
+        timestamp: Date.now(),
       };
 
       const updatedComments = [...comments, newComment];

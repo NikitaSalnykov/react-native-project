@@ -106,7 +106,7 @@ function RegistrationScreen() {
           login
         );
 
-        avatarUrl = imageUrl;
+        avatarUrl = { imageUrl, photoName };
       }
 
       dispatch(
@@ -169,7 +169,7 @@ function RegistrationScreen() {
         <View style={styles.avatarContainer}>
           {avatar && (
             <Image
-              source={{ uri: avatar }}
+              source={{ uri: avatar.imageUrl }}
               style={{ width: "100%", flex: 1, borderRadius: 16 }}
             />
           )}

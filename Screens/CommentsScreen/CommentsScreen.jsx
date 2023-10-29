@@ -19,13 +19,14 @@ import {
   getPostDataFromFirestore,
   writeCommentToFirestore,
 } from "../../helpers/firebaseComments";
+import placeholderAvatar from "../../assets/emptyAvatar.png";
 
 const CommentsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { id: userId } = useAuth();
   const userName = useSelector((state) => state.auth.userName);
-
+  const avatar = useSelector((state) => state.auth.avatar);
   const postId = route.params?.postId || null;
   const [inputText, setInputText] = useState("");
   const [post, setPost] = useState("");
@@ -101,14 +102,27 @@ const CommentsScreen = () => {
                     ]}
                     key={el.timestamp}
                   >
-                    <Image
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: 50,
-                        backgroundColor: "black",
-                      }}
-                    ></Image>
+                    {avatar ? (
+                      <Image
+                        source={{ uri: avatar.imageUrl }}
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: 50,
+                          backgroundColor: "black",
+                        }}
+                      ></Image>
+                    ) : (
+                      <Image
+                        source={placeholderAvatar}
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: 50,
+                          backgroundColor: "black",
+                        }}
+                      />
+                    )}
                     <View
                       style={[
                         {

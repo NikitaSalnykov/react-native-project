@@ -9,25 +9,85 @@ import {
 } from "react-native";
 import { StyleSheet, View } from "react-native";
 import RemovePhoto from "../../assets/svg/remove.svg";
+import AddPhoto from "../../assets/svg/add.svg";
 import CommentIcon from "../../assets/svg/comment.svg";
 import LikeIcon from "../../assets/svg/like.svg";
 import GeoIcon from "../../assets/svg/geo.svg";
 import LogoutButton from "../../Components/LogoutButton";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import placeholderAvatar from "../../assets/emptyAvatar.png";
 import Trash from "../../assets/svg/trash.svg";
 import { useAuth } from "../../hooks/useAuth";
-
-// import LogoutIcon from '../../assets/svg/logout.svg'
+import {
+  deleteDataFromFirestore,
+  deleteImageFromStorage,
+  getDataFromFirestore,
+  getLikesFromFirestore,
+} from "../../helpers/firebasePosts";
+import { setPosts } from "../../redux/postsSlice";
+import { useNavigation } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
+import * as Permissions from "expo-permissions";
+import {
+  deleteAvatarFromStorage,
+  uploadAvatarToStorage,
+} from "../../helpers/firebaseAvatar";
+import { changeAvatar, removeAvatar } from "../../redux/authSlice";
 
 const ProfileScreen = () => {
   const avatar = useSelector((state) => state.auth.avatar);
   const userName = useSelector((state) => state.auth.userName);
   const posts = useSelector((state) => state.posts.posts);
-  const { id: userId, email } = useAuth();
+  const { id: userId } = useAuth();
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
 
-  console.log(posts);
-  console.log(1);
+  const handleDelete = async (collectionName, docId, photoName) => {
+    await deleteDataFromFirestore(collectionName, docId);
+    await deleteImageFromStorage(photoName);
+    const filteredPosts = await getDataFromFirestore(userId);
+    dispatch(setPosts(filteredPosts));
+  };
+
+  const handleMap = (location, locationName) => {
+    navigation.navigate("Map", { location, locationName, back: "Home" });
+  };
+
+  const handleLike = async (collectionName, docId, userId) => {
+    await getLikesFromFirestore(collectionName, docId, userId);
+    const filteredPosts = await getDataFromFirestore(userId);
+    dispatch(setPosts(filteredPosts));
+  };
+
+  const pickImage = async () => {
+    // Запрашиваем разрешение на доступ к галерее
+    const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+
+    if (status === "granted") {
+      // Позволяет пользователю выбрать изображение из галереи
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      if (!result.canceled) {
+        const { imageUrl, photoName } = await uploadAvatarToStorage(
+          result.assets[0].uri,
+          userName
+        );
+        dispatch(changeAvatar({ avatar: { imageUrl, photoName } }));
+        console.log(imageUrl);
+        console.log(avatar);
+      }
+    }
+  };
+
+  const deleteAvatar = async (fileName) => {
+    await deleteAvatarFromStorage(fileName);
+    dispatch(removeAvatar());
+  };
+
   return (
     <ImageBackground
       source={background}
@@ -40,21 +100,36 @@ const ProfileScreen = () => {
         </View>
         <View style={styles.avatarContainer}>
           {avatar ? (
-            <Image
-              source={{ uri: avatar }}
-              style={{ width: "100%", flex: 1, borderRadius: 16 }}
-            />
+            <>
+              <Image
+                source={{ uri: avatar.imageUrl }}
+                style={{ width: "100%", flex: 1, borderRadius: 16 }}
+              />
+              <TouchableOpacity
+                style={styles.dowloadAvatarWrapper}
+                onPress={() => {
+                  deleteAvatar(avatar.photoName);
+                }}
+              >
+                <RemovePhoto
+                  style={{ fill: "gray", transform: [{ rotate: "45deg" }] }}
+                />
+              </TouchableOpacity>
+            </>
           ) : (
-            <Image
-              source={placeholderAvatar}
-              style={{ width: "100%", flex: 1, borderRadius: 16 }}
-            />
+            <>
+              <Image
+                source={placeholderAvatar}
+                style={{ width: "100%", flex: 1, borderRadius: 16 }}
+              />
+              <TouchableOpacity
+                style={styles.dowloadAvatarWrapper}
+                onPress={pickImage}
+              >
+                <AddPhoto />
+              </TouchableOpacity>
+            </>
           )}
-          <View style={styles.dowloadAvatarWrapper}>
-            <RemovePhoto
-              style={{ fill: "gray", transform: [{ rotate: "45deg" }] }}
-            />
-          </View>
         </View>
         <Text style={styles.title}>{userName}</Text>
         <ScrollView showsVerticalScrollIndicator={false} style={{}}>
@@ -83,7 +158,11 @@ const ProfileScreen = () => {
                     }}
                     resizeMode="cover"
                     style={[
-                      { height: "100%", width: "100%" },
+                      {
+                        height: "100%",
+                        width: "100%",
+                        backgroundColor: "#bdbdbd73",
+                      },
                       !el.photoDescription && { marginBottom: 16 },
                     ]}
                   />
@@ -132,7 +211,7 @@ const ProfileScreen = () => {
                         }}
                       >
                         <CommentIcon />
-                        <Text style={styles.text}>0</Text>
+                        <Text style={styles.text}>{el.comments.length}</Text>
                       </View>
                     </TouchableOpacity>
                     <TouchableOpacity

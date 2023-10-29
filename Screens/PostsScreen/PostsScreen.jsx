@@ -30,7 +30,6 @@ const PostsScreen = () => {
   const { id: userId, email } = useAuth();
   const userName = useSelector((state) => state.auth.userName);
   const avatar = useSelector((state) => state.auth.avatar);
-  const [POSTS, setPOSTS] = useState([]);
   const posts = useSelector((state) => state.posts.posts);
 
   const navigation = useNavigation();
@@ -70,7 +69,7 @@ const PostsScreen = () => {
         <View style={styles.avatarBox}>
           {avatar ? (
             <Image
-              source={{ uri: avatar }}
+              source={{ uri: avatar.imageUrl }}
               style={{ width: "100%", flex: 1, borderRadius: 16 }}
             />
           ) : (
@@ -124,7 +123,11 @@ const PostsScreen = () => {
                     }}
                     resizeMode="cover"
                     style={[
-                      { height: "100%", width: "100%" },
+                      {
+                        height: "100%",
+                        width: "100%",
+                        backgroundColor: "#bdbdbd73",
+                      },
                       !el.photoDescription && { marginBottom: 16 },
                     ]}
                   />
@@ -173,7 +176,7 @@ const PostsScreen = () => {
                         }}
                       >
                         <CommentIcon />
-                        <Text style={styles.text}>0</Text>
+                        <Text style={styles.text}>{el.comments.length}</Text>
                       </View>
                     </TouchableOpacity>
                     <TouchableOpacity

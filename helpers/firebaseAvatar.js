@@ -31,14 +31,14 @@ export const uploadAvatarToStorage = async (imageUri, login) => {
   }
 };
 
-// export const deleteAvatarFromStorage = async (fileName) => {
-//   try {
-//     const imageRef = ref(storage, `avatars/${fileName}`);
-//     await deleteObject(imageRef);
-//     console.log("Файл успешно удален.");
-//     return true; // Возвращаем true для обозначения успешного удаления
-//   } catch (error) {
-//     console.error("Ошибка при удалении файла:", error);
-//     return false; // Возвращаем false в случае ошибки
-//   }
-// };
+export const deleteAvatarFromStorage = async (fileName) => {
+  try {
+    const imageRef = ref(storage, `avatars/${fileName}`);
+    await deleteObject(imageRef);
+    console.log("Файл успешно удален.");
+    return true; // Возвращаем true для обозначения успешного удаления
+  } catch (error) {
+    console.error("Ошибка при удалении файла:", error);
+    return false; // Возвращаем false в случае ошибки
+  }
+};
