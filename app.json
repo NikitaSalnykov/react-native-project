@@ -22,10 +22,16 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "softwareKeyboardLayoutMode": "pan" 
+      "softwareKeyboardLayoutMode": "pan",
+      "package": "com.nikitasalnykov.reactnativeproject"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4a5eed47-0bb6-41a1-ace7-40d809b3af6c"
+      }
     }
   }
 }

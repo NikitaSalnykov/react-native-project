@@ -107,6 +107,11 @@ function RegistrationScreen() {
         );
 
         avatarUrl = { imageUrl, photoName };
+
+        await updateProfile(user, {
+          displayName: login,
+          photoURL: imageUrl
+        });
       }
 
       dispatch(

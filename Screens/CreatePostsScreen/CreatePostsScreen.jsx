@@ -204,8 +204,8 @@ const CreatePostsScreen = () => {
             <View
               style={{
                 width: "100%",
-                borderBottomWidth: "1",
-                borderColor: "#eeeeee",
+                borderBottomWidth: 1,
+                borderColor: "#E8E8E8",
               }}
             >
               <Text

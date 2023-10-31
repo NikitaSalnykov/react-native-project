@@ -7,6 +7,8 @@ import {
 } from "firebase/storage";
 import * as ImageManipulator from "expo-image-manipulator";
 
+
+
 export const uploadAvatarToStorage = async (imageUri, login) => {
   try {
     const resizedPhoto = await ImageManipulator.manipulateAsync(

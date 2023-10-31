@@ -33,12 +33,16 @@ import {
   uploadAvatarToStorage,
 } from "../../helpers/firebaseAvatar";
 import { changeAvatar, removeAvatar } from "../../redux/authSlice";
+import { auth } from '../../config';
+import { updateProfile } from "firebase/auth";
+
 
 const ProfileScreen = () => {
   const avatar = useSelector((state) => state.auth.avatar);
   const userName = useSelector((state) => state.auth.userName);
   const posts = useSelector((state) => state.posts.posts);
   const { id: userId } = useAuth();
+  const user = auth.currentUser;
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
@@ -59,6 +63,8 @@ const ProfileScreen = () => {
     dispatch(setPosts(filteredPosts));
   };
 
+  console.log(user.photoURL);
+
   const pickImage = async () => {
     // Запрашиваем разрешение на доступ к галерее
     const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
@@ -77,8 +83,11 @@ const ProfileScreen = () => {
           userName
         );
         dispatch(changeAvatar({ avatar: { imageUrl, photoName } }));
-        console.log(imageUrl);
-        console.log(avatar);
+        await updateProfile(user, {
+          photoURL: imageUrl
+        });
+
+        await user.reload();
       }
     }
   };
@@ -86,6 +95,12 @@ const ProfileScreen = () => {
   const deleteAvatar = async (fileName) => {
     await deleteAvatarFromStorage(fileName);
     dispatch(removeAvatar());
+    await updateProfile(user, {
+      photoURL: ''
+    });
+    await user.reload();
+
+
   };
 
   return (

@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingLeft: 16,
     paddingRight: 16,
-    backgroundColor: "#f4f4f4"
+    backgroundColor: "white"
   },
   loginText: {
     fontFamily: "Roboto-Regular",
